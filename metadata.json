@@ -1,0 +1,5 @@
+{
+  "name": "SentimentAI",
+  "description": "Turn customer feedback into actionable insights with Gemini 2.5.",
+  "requestFramePermissions": []
+}
