@@ -1,0 +1,7 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+.DS_Store
+# Exclude the build folder itself, as the build step creates it
+build
