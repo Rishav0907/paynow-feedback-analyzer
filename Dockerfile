@@ -4,31 +4,42 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy package files
-COPY package.json package-lock.json* ./
+COPY package.json ./
 
 # Install dependencies
-RUN npm ci
+RUN npm ci --only=production=false
 
 # Copy source code
 COPY . .
 
+# Build arguments for environment variables
+# Note: GEMINI_API_KEY should be provided as build arg or env var
+ARG GEMINI_API_KEY
+ENV GEMINI_API_KEY=${GEMINI_API_KEY}
+
 # Build the application
-# Note: GEMINI_API_KEY should be provided at runtime via environment variables
-# For build-time, you may need to set it if your build process requires it
+# The build process will embed the API key via Vite's define config
 RUN npm run build
 
 # Production stage
 FROM nginx:alpine
 
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Install envsubst for environment variable substitution
+RUN apk add --no-cache gettext
+
+# Copy custom nginx config template
+COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 
 # Copy built assets from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Expose port (Cloud Run will set PORT env var, but nginx defaults to 80)
-EXPOSE 80
+# Copy and set permissions for entrypoint script
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
-# Start nginx
+# Expose port (Cloud Run sets PORT env var, defaults to 8080)
+EXPOSE 8080
+
+# Use custom entrypoint to handle PORT environment variable
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
-
