@@ -7,10 +7,10 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy package files
-COPY package.json package-lock.json* ./
+COPY package.json ./
 
-# Install dependencies
-RUN npm ci
+# Install dependencies (use npm install since we don't have package-lock.json)
+RUN npm install
 
 # Copy all source files
 COPY . .
@@ -25,17 +25,11 @@ RUN npm run build
 # Stage 2: Production server with Nginx
 FROM nginx:alpine
 
-# Install nodejs for potential runtime needs
-RUN apk add --no-cache nodejs
-
 # Copy built assets from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Copy package.json for metadata
-COPY --from=builder /app/package.json /usr/share/nginx/html/
 
 # Expose port 8080 (Google Cloud Run uses this port)
 EXPOSE 8080
