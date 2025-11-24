@@ -9,7 +9,7 @@ WORKDIR /app
 ARG GEMINI_API_KEY
 
 # Copy package files first to leverage Docker's build cache
-COPY package.json package-lock.json ./
+COPY package.json ./
 
 # Install dependencies
 RUN npm install
