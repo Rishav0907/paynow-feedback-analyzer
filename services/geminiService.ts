@@ -3,7 +3,11 @@ import { SentimentAnalysisResult, SentimentType } from "../types";
 
 // Initialize the Gemini client
 // The API key is obtained from the environment variable as per instructions
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY || '';
+if (!apiKey) {
+  console.error('GEMINI_API_KEY is not set. Please set it as an environment variable.');
+}
+const ai = new GoogleGenAI({ apiKey });
 
 export const analyzeSentiment = async (text: string): Promise<SentimentAnalysisResult> => {
   if (!text || text.trim().length === 0) {
