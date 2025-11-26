@@ -4,6 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SentimentAI</title>
+    
+    <script>
+      // The '$$API_KEY$$' placeholder is what 'envsubst' will look for
+      // and replace with the secret value provided by Cloud Run's $API_KEY environment variable.
+      window.process = window.process || {};
+      window.process.env = window.process.env || {};
+      window.process.env.API_KEY = '$$API_KEY$$'; 
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -11,9 +19,9 @@
         font-family: 'Inter', sans-serif;
       }
     </style>
-</head>
+  </head>
   <body class="bg-gray-50 text-gray-900 antialiased">
     <div id="root"></div>
-  <script type="module" src="/index.tsx"></script>
-</body>
+    <script type="module" src="/index.tsx"></script>
+  </body>
 </html>
